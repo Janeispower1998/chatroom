@@ -19,21 +19,21 @@ int main() {
     int lfd = socket(AF_INET, SOCK_STREAM, 0);
     sockaddr_in serverAddr{}, clientAddr{};
     int opt = 1;
-    if (-1 == setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))) {
+    if (-1 == setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))) {  // setsockopt设置socket选项
         cout << "setsockopt fail" << endl;
         exit(-1);
     }//设置端口复用
-    int epfd = epoll_create(MAX_CONNECTIONS);
-    epoll_event ev{}, events[MAX_CONNECTIONS];
-    ev.data.fd = lfd;
-    ev.events = EPOLLIN;
-    if (-1 == epoll_ctl(epfd, EPOLL_CTL_ADD, lfd, &ev)) {
+    int epfd = epoll_create(MAX_CONNECTIONS);  // epoll_create创建一个epoll实例 MAX_CONNECTIONS参数可以忽略掉 大于0就行
+    epoll_event ev{}, events[MAX_CONNECTIONS];  // epoll_event用于注册感兴趣事件和回传所发生的待处理事件 events表示感兴趣事件和被触发事件
+    ev.data.fd = lfd;  // 传一个客户socket的句柄
+    ev.events = EPOLLIN;  // EPOLLIN表示对应文件描述符可读
+    if (-1 == epoll_ctl(epfd, EPOLL_CTL_ADD, lfd, &ev)) {  // epoll_ctl注册事件
         cout << "epoll_ctl fail" << endl;
         exit(-1);
     }
-    serverAddr.sin_port = htons(PORT);
-    serverAddr.sin_family = AF_INET;
-    inet_pton(AF_INET, HOST, &serverAddr.sin_addr);
+    serverAddr.sin_port = htons(PORT);  // socket将分配PORT这个端口
+    serverAddr.sin_family = AF_INET;  // AF_INET表示互联网域名
+    inet_pton(AF_INET, HOST, &serverAddr.sin_addr);  // inet_pton是IP地址转换函数
     if (-1 == bind(lfd, (sockaddr *) &serverAddr, sizeof(serverAddr))) {
         cout << "bind fail" << endl;
         exit(-1);
@@ -47,7 +47,7 @@ int main() {
     UserService us;
     Online online;
     while (true) {
-        int nready = epoll_wait(epfd, events, MAX_CONNECTIONS, -1);
+        int nready = epoll_wait(epfd, events, MAX_CONNECTIONS, -1);  // epoll_wait获取是否有注册事件发生
         if (nready < 0) {
             cout << "epoll_wait error" << endl;
             exit(-1);
