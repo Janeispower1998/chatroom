@@ -5,7 +5,7 @@
 #include "Online.h"
 
 string Online::getOnlineListStr() {
-    Json::Value onlineList;
+    Json::Value onlineList;  // Json::Value表示从JSON字符串中提取标量值
     for (auto &item : userMap) {
         Json::Value userJson;
         userJson["account"] = item.second.account;
@@ -13,7 +13,7 @@ string Online::getOnlineListStr() {
         userJson["loginTime"] = item.second.loginTime;
         onlineList.append(userJson);
     }
-    return onlineList.toStyledString();
+    return onlineList.toStyledString();  // toStyledString()可以用来解决中文乱码问题
 }
 
 bool Online::appendUser(int account, string username) {
