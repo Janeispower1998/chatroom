@@ -5,13 +5,13 @@
 #include "MySQLConnector.h"
 
 void MySQLConnector::init() {
-    conn = mysql_init(NULL);
-    conn = mysql_real_connect(conn, HOST, USERNAME, PASSWORD, DATABASE, PORT, NULL, 0);
+    conn = mysql_init(NULL);  // 初始化
+    conn = mysql_real_connect(conn, HOST, USERNAME, PASSWORD, DATABASE, PORT, NULL, 0);  // 尝试与MySQL服务器进行连接
     if (!conn) {
         cout << "mysql_real_connect fail" << endl;
-        exit(-1);
+        exit(-1);  // 退出当前程序 将-1返回给主调程序
     }
-    mysql_query(conn, "set names utf8");
+    mysql_query(conn, "set names utf8");  // mysql_query是一条查询语句 "set names utf8"用于解决乱码问题
 }
 
 MySQLConnector *MySQLConnector::getMySQLConnector() {
