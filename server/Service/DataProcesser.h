@@ -16,7 +16,7 @@
 #include "../ProtocolHead/DataEncoder.h"
 
 #define IMAGE_PATH "./image/"
-#define TCP_BUFSIZ 8192
+#define TCP_BUFSIZ 8192  // TCP每次能传输的最大字节数为8192
 using namespace std;
 
 class DataProcesser {
@@ -24,7 +24,7 @@ class DataProcesser {
 private:
     char buffer[TCP_BUFSIZ];
 
-    int checkSocketConnected(int sock);
+    int checkSocketConnected(int sock);  // 每次收发之前都要检查一下TCP状态
 
 public:
     DataProcesser();
@@ -39,9 +39,9 @@ public:
 
     void writeMsg(int fd, unsigned int account, string text, unsigned int protocolId = SEND);
 
-    void writeTextToAllUser(const vector<int> &fds, int account, const string &text, unsigned int protocolId = SEND);
+    void writeTextToAllUser(const vector<int> &fds, int account, const string &text, unsigned int protocolId = SEND);  // 群发text
 
-    void writeImageToAllUser(const vector<int> &fds, int account, const string &imagePath);
+    void writeImageToAllUser(const vector<int> &fds, int account, const string &imagePath);  // 群发image
 
     int getFileLength(const string &fileName);
 
