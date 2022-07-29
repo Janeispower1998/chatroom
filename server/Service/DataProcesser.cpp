@@ -8,13 +8,13 @@ DataProcesser::DataProcesser() {
 
 }
 
-int DataProcesser::checkSocketConnected(int sock) {
-    if (sock <= 0)
+int DataProcesser::checkSocketConnected(int sock) {  // 检查TCP是否连接
+    if (sock <= 0)  // 检查连接符是否合法
         return 0;
-    tcp_info info{};
+    tcp_info info{};  // 定义一个TCP系统内置的结构体
     int len = sizeof(info);
-    getsockopt(sock, IPPROTO_TCP, TCP_INFO, &info, (socklen_t *) &len);
-    if (info.tcpi_state == TCP_ESTABLISHED) {
+    getsockopt(sock, IPPROTO_TCP, TCP_INFO, &info, (socklen_t *) &len);  // 获取socket状态函数
+    if (info.tcpi_state == TCP_ESTABLISHED) {  // 如果TCP建立 返回1 否则返回0
         return 1;
     } else {
         return 0;
@@ -27,7 +27,7 @@ string DataProcesser::readTextContent(int fd, unsigned int dataLength) {
     int size = 0;
     unsigned int buffSize = TCP_BUFSIZ;
     string content;
-    while (true) {
+    while (true) {  
         if (checkSocketConnected(fd) == 0) {
             break;
         }
@@ -48,11 +48,11 @@ string DataProcesser::readTextContent(int fd, unsigned int dataLength) {
 string DataProcesser::readImageContent(int fd, unsigned int dataLength) {
     //获取当前时间戳作为文件名前缀
     string imagePath = IMAGE_PATH + MyTime::getTimeStampStr() + ".png";
-    ofstream os(imagePath, ios::out | ios::binary);
+    ofstream os(imagePath, ios::out | ios::binary);  // buffer-->file
     unsigned int count = 0;
     int size = 0;
     unsigned int buffSize = TCP_BUFSIZ;
-    while (true) {
+    while (true) {  // 如果连接断开或者接收完毕 则结束循环
         if (checkSocketConnected(fd) == 0) {
             break;
         }
@@ -70,13 +70,13 @@ string DataProcesser::readImageContent(int fd, unsigned int dataLength) {
 }
 
 void DataProcesser::writeText(int fd, unsigned int account, string text, unsigned int protocolId) {
-    DataEncoder de;
-    string headStr = de.encode(protocolId, account, TEXT, text.length());
-    if (checkSocketConnected(fd) == 0) {
+    DataEncoder de;  // 定义一个编码器
+    string headStr = de.encode(protocolId, account, TEXT, text.length());  // 把头部信息进行编码
+    if (checkSocketConnected(fd) == 0) {  // 如果连接断开
         return;
     }
-    send(fd, headStr.data(), headStr.length(), MSG_NOSIGNAL);
-    read(fd, buffer, BASE_BUFFER_SIZE);
+    send(fd, headStr.data(), headStr.length(), MSG_NOSIGNAL);  // 直接把头部报文发过去 然后返回ACK
+    read(fd, buffer, BASE_BUFFER_SIZE);  // 读ACK
     int count = 0;
     unsigned int dataLength = text.length();
     const char *data = text.data();
@@ -125,8 +125,8 @@ void DataProcesser::writeImage(int fd, unsigned int account, const string &image
     if (checkSocketConnected(fd) == 0) {
         return;
     }
-    send(fd, headStr.data(), headStr.length(), MSG_NOSIGNAL);
-    read(fd, buffer, BASE_BUFFER_SIZE);
+    send(fd, headStr.data(), headStr.length(), MSG_NOSIGNAL);  // 发送报头
+    read(fd, buffer, BASE_BUFFER_SIZE);  // 返回ACK
     int count = 0;
     HeadData hd;
     while (in.tellg() != -1) {
