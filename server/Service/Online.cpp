@@ -17,7 +17,7 @@ string Online::getOnlineListStr() {
 }
 
 bool Online::appendUser(int account, string username) {
-    user u = {account, move(username), MyTime::getCurrentFormatTimeStr()};
+    user u = {account, move(username), MyTime::getCurrentFormatTimeStr()};  // 初始化参数 并把参数直接放里面
     userMap[account] = u;
     return true;
 }
