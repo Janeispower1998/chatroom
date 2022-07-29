@@ -4,7 +4,7 @@
 
 #include "HeadData.h"
 
-bool HeadData::baseParse() {
+bool HeadData::baseParse() {  // 解析数据
     this->protocolId = parseInt(PROTOCOL_ID_SIZE);
     this->account = parseInt(ACCOUNT_SIZE);
     this->dataType = parseInt(DATA_TYPE_SIZE);
@@ -22,10 +22,10 @@ unsigned int HeadData::parseInt(int len) {
     return sum;
 }
 
-HeadData::HeadData(int fd) {
-    read(fd, buffer, BASE_BUFFER_SIZE);
+HeadData::HeadData(int fd) {  // fd即socket的意思
+    read(fd, buffer, BASE_BUFFER_SIZE);  // 然后读socket的8位缓存
     bp = buffer;
-    baseParse();
+    baseParse();  // 然后开始解析
 }
 
 HeadData::HeadData() {
