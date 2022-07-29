@@ -16,8 +16,8 @@
 using namespace std;
 
 int main() {
-    int lfd = socket(AF_INET, SOCK_STREAM, 0);
-    sockaddr_in serverAddr{}, clientAddr{};
+    int lfd = socket(AF_INET, SOCK_STREAM, 0);  // 申请socket过程
+    sockaddr_in serverAddr{}, clientAddr{};  // 申请地址结构体
     int opt = 1;
     if (-1 == setsockopt(lfd, SOL_SOCKET, SO_REUSEADDR, &opt, sizeof(opt))) {  // setsockopt设置socket选项
         cout << "setsockopt fail" << endl;
@@ -55,7 +55,7 @@ int main() {
         cout << "收到" << nready << "个请求" << endl;
         for (int i = 0; i < nready; i++) {
             int fd = events[i].data.fd;
-            if (fd == lfd) {
+            if (fd == lfd) {  // 判断是否有客户端连接进来
                 socklen_t len = sizeof(clientAddr);
                 int cfd = accept(lfd, (sockaddr *) &clientAddr, &len);
                 ev.data.fd = cfd;
@@ -65,7 +65,7 @@ int main() {
                 //设置超时read
                 struct timeval timeout = {1, 0};
                 setsockopt(cfd, SOL_SOCKET, SO_RCVTIMEO, (char *) &timeout, sizeof(struct timeval));
-            } else if (events[i].events & EPOLLIN) {
+            } else if (events[i].events & EPOLLIN) {  // 如不是 就是有客户端断开或客户端通信
                 HeadData hd(fd);
                 unsigned int protocolId = hd.getProtocolId();
                 unsigned int account = hd.getAccount();
